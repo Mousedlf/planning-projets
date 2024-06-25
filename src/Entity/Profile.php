@@ -2,30 +2,29 @@
 
 namespace App\Entity;
 
-use App\Repository\ProjectRepository;
+use App\Repository\ProfileRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity(repositoryClass: ProjectRepository::class)]
-class Project
+#[ORM\Entity(repositoryClass: ProfileRepository::class)]
+class Profile
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 255)]
-    private ?string $name = null;
-
-    #[ORM\Column]
-    private ?float $duration = null;
+    #[ORM\OneToOne(inversedBy: 'profile', cascade: ['persist', 'remove'])]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?User $ofUser = null;
 
     /**
      * @var Collection<int, Assignment>
      */
-    #[ORM\OneToMany(targetEntity: Assignment::class, mappedBy: 'project', orphanRemoval: true)]
+    #[ORM\OneToMany(targetEntity: Assignment::class, mappedBy: 'profile', orphanRemoval: true)]
     private Collection $assignments;
+
 
     public function __construct()
     {
@@ -37,26 +36,14 @@ class Project
         return $this->id;
     }
 
-    public function getName(): ?string
+    public function getOfUser(): ?User
     {
-        return $this->name;
+        return $this->ofUser;
     }
 
-    public function setName(string $name): static
+    public function setOfUser(User $ofUser): static
     {
-        $this->name = $name;
-
-        return $this;
-    }
-
-    public function getDuration(): ?float
-    {
-        return $this->duration;
-    }
-
-    public function setDuration(float $duration): static
-    {
-        $this->duration = $duration;
+        $this->ofUser = $ofUser;
 
         return $this;
     }
@@ -73,7 +60,7 @@ class Project
     {
         if (!$this->assignments->contains($assignment)) {
             $this->assignments->add($assignment);
-            $assignment->setProject($this);
+            $assignment->setProfile($this);
         }
 
         return $this;
@@ -83,11 +70,12 @@ class Project
     {
         if ($this->assignments->removeElement($assignment)) {
             // set the owning side to null (unless already changed)
-            if ($assignment->getProject() === $this) {
-                $assignment->setProject(null);
+            if ($assignment->getProfile() === $this) {
+                $assignment->setProfile(null);
             }
         }
 
         return $this;
     }
+
 }

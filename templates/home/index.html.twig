@@ -4,19 +4,28 @@
 
 {% block body %}
 
-{# <a href="{{ path('admin') }}">Admin Dashboard : manage projects</a>
+ <a href="{{ path('admin') }}">Admin Dashboard : manage projects</a>
 
-<h2>All availiable projects</h2>
+<h2>All projects</h2>
 <ul>
 {% for project in projects %}
-<li>{{ project.name}} </li>
+<li>{{ project.name}}, Hours planned : /{{ project.duration}}</li>
+<a href=" {{ path('app_assign', {id: project.id}) }} ">assign</a>
 {% endfor %}
 </ul>
-<hr> #}
 
-<div class="vh-100 bg-light p-0 m-0 col">
-     <div class="col-4"  id='calendar'></div>
+<h2>My assignements</h2>
+<ul>
+{% for assignment in assignments %}
+     <li>{{ assignment.project.name}}, {{ assignment.date|date("d/m/Y")}}, {{ assignment.allotedTime}} h </li> <!-- H:i:s -->
+{% endfor %}
+</ul>
+
+
+
+
+<div class="vh-100  p-0 m-0 col">
+     <div class="" id='calendar'></div>
 </div>
-<p>allal</p>
 
 {% endblock %}

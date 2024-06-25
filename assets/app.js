@@ -8,21 +8,24 @@ import './bootstrap.js';
 import './styles/app.css';
 
 document.addEventListener('DOMContentLoaded', function() {
-    var calendarEl = document.getElementById('calendar');
+    var calendarEl = document.querySelector('#calendar');
 
-    var calendar = new FullCalendar.Calendar(calendarEl, {
+    
+  var calendar = new FullCalendar.Calendar(calendarEl, {
       initialView: 'dayGridYear',
       buttonText: {
         today:false,
       },
       height: "100%",
-      weekNumbers : true,
+    //  weekNumbers : true,
       weekText : "",
       navLinks : true,
       navLinkDayClick: function(date) {
         console.log('click', date.toISOString());
+        let noot = "1";
+
       },
-      navLinkWeekClick: function() {},
+    //  navLinkWeekClick: function() {},
       aspectRatio: 5,
       contentHeight: 'auto',
       multiMonthMaxColumns: 1,
@@ -32,8 +35,9 @@ document.addEventListener('DOMContentLoaded', function() {
       moreLinkClick : "popover", // ?*
 
     });
-    
-    calendar.updateSize()
 
-    calendar.render();
+
+
+  calendar.render();
+
   });
