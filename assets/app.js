@@ -7,4 +7,33 @@ import './bootstrap.js';
  */
 import './styles/app.css';
 
-console.log('This log comes from assets/app.js - welcome to AssetMapper! 🎉');
+document.addEventListener('DOMContentLoaded', function() {
+    var calendarEl = document.getElementById('calendar');
+
+    var calendar = new FullCalendar.Calendar(calendarEl, {
+      initialView: 'dayGridYear',
+      buttonText: {
+        today:false,
+      },
+      height: "100%",
+      weekNumbers : true,
+      weekText : "",
+      navLinks : true,
+      navLinkDayClick: function(date) {
+        console.log('click', date.toISOString());
+      },
+      navLinkWeekClick: function() {},
+      aspectRatio: 5,
+      contentHeight: 'auto',
+      multiMonthMaxColumns: 1,
+      weekends : false,
+      dayHeaders : false ,
+      handleWindowResize: true,
+      moreLinkClick : "popover", // ?*
+
+    });
+    
+    calendar.updateSize()
+
+    calendar.render();
+  });
