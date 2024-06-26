@@ -26,7 +26,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
       },
     //  navLinkWeekClick: function() {},
-      aspectRatio: 5,
+      aspectRatio: 10,
       contentHeight: 'auto',
       multiMonthMaxColumns: 1,
       weekends : false,
@@ -41,3 +41,8 @@ document.addEventListener('DOMContentLoaded', function() {
   calendar.render();
 
   });
+
+
+// ----------------------------------------------------------------------TABS
+  
+  

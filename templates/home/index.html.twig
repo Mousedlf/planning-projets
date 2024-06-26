@@ -2,22 +2,52 @@
 
 {% block content_title %}Planning{% endblock %}
 
-{% block page_actions %}
+{# {% block page_actions %}
     <a class="btn btn-primary" href="...">Some Action</a>
-{% endblock %}
+{% endblock %} #}
 
 {% block main %}
 
+<style>
 
-<div class="d-flex">
+.tab button.active {
+  background-color: limegreen;
+}
 
-<div class="col-4">
+</style>
+
+
+
+<div class="tab">
+{% for person in people %}
+
+  <button class="tablinks" onclick="openCity(event, '{{ person.name }}')">{{ person.name }}</button>
+
+  {% endfor %}
+
+</div>
+
+{% for person in people %}
+     <div id="{{person.name}}" class="tabcontent">
+          <h3>page de {{ person.name }}</h3>
+
+
+          <div class="col-4">
+               <div class="" id='calendar'></div>
+          </div>
+
+     </div>
+{% endfor %}
+
+{# <div class="d-flex"> #}
+
+{# <div class="col-4">
      <h2>All projects</h2>
           <ul>
           {% for project in projects|sort((a, b) => a.name <=> b.name) %}
                <li>
                     <span> {{ project.name}} ---- 
-                    <span id="{{ project.id }}" class="text-secondary">{{ project.plannedHours }} </span>
+                    <span id="{{ project.id }}" class="text-secondary">{{ project.plannedHours }} </span> <!-- changement couleur -->
                     /{{ project.duration}} h ----</span>
                     <a href=" {{ ea_url().setRoute('app_assign', {id: project.id}) }} ">assign</a>
                     <ul>
@@ -46,16 +76,40 @@
                </ul>
           {% endfor %}
      </div>
-     
-</div>
 
-
-
-
-
-
-{# <div class="vh-100  p-0 m-0 col">
-     <div class="" id='calendar'></div>
 </div> #}
+
+
+
+
+{% endblock %}
+
+{% block javascripts %}
+
+<script>
+    {% block importmap %}{{ importmap('app') }}{% endblock %}
+
+function openCity(evt, cityName) {
+    // Declare all variables
+    var i, tabcontent, tablinks;
+  
+    // Get all elements with class="tabcontent" and hide them
+    tabcontent = document.getElementsByClassName("tabcontent");
+    for (i = 0; i < tabcontent.length; i++) {
+      tabcontent[i].style.display = "none";
+    }
+  
+    // Get all elements with class="tablinks" and remove the class "active"
+    tablinks = document.getElementsByClassName("tablinks");
+    for (i = 0; i < tablinks.length; i++) {
+      tablinks[i].className = tablinks[i].className.replace(" active", "");
+    }
+  
+    // Show the current tab, and add an "active" class to the button that opened the tab
+    document.getElementById(cityName).style.display = "block";
+    evt.currentTarget.className += " active";
+  } 
+  </script>
+           
 
 {% endblock %}

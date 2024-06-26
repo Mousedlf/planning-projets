@@ -31,6 +31,13 @@ class HomeController extends AbstractController
         $projects = $projectRepository->findAll();
         $people = $personRepository->findAll() ;
 
+    
+       foreach($projects as $project){
+
+            if($project->getDuration() > $project->getPlannedHours()){
+                
+        }
+        }
 
         // overtime
         // exact nb of hours
@@ -47,7 +54,7 @@ class HomeController extends AbstractController
     {
         $person = $personRepository->findBy(['id'=> 1]); // recup du titre du tableau
         $date = new DateTime(); // recup date du calendrier
-        $allotedTime = 8 ; // a recup d'un formulaire, max 8 càd 1 jour ?
+        $allotedTime = 1 ; // a recup d'un formulaire, max 8 càd 1 jour ?
 
         $projectManagerService->assign($project, $date, $person[0], $allotedTime);
         

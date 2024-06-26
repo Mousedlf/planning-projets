@@ -52,6 +52,12 @@ class ProjectManagerService
         $project->setPlannedHours($plannedHours);
 
         $allAssignmentsLinkedToProject = $project->getAssignments();
+
+        if(count($allAssignmentsLinkedToProject) == 1){
+            $project->setPlannedHours(0);
+        } 
+        // encore des verifs au niveau du compteur necessaires
+    
         $numberAssignementsOfPerson = 0;
         foreach($allAssignmentsLinkedToProject as $assignment){
             if($assignment->getPerson() == $person){
