@@ -32,8 +32,7 @@ class RegistrationController extends AbstractController
                 )
             );
 
-            $profile = new Profile();
-            $user->setProfile($profile);
+
 
             $entityManager->persist($user);
             $entityManager->flush();

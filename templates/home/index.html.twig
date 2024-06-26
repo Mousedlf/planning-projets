@@ -1,46 +1,61 @@
-{% extends 'base.html.twig' %}
+{% extends '@EasyAdmin/page/content.html.twig' %}
 
-{% block title %}Planning{% endblock %}
+{% block content_title %}Planning{% endblock %}
 
-{% block body %}
+{% block page_actions %}
+    <a class="btn btn-primary" href="...">Some Action</a>
+{% endblock %}
 
- <a href="{{ path('admin') }}">Admin Dashboard : manage projects</a>
-
-<h2>All projects</h2>
-     <ul>
-     {% for project in projects %}
-
-          <li>{{ project.name}}, Hours planned : {{ project.plannedHours }}/{{ project.duration}}</li>
-
-          {% if app.user != null %}
-               <a href=" {{ path('app_assign', {id: project.id}) }} ">assign</a>
-               
-
-               {% else %}
-               <a href=" {{ path('app_login') }} ">log in to assign yourself work</a>
+{% block main %}
 
 
-          {% endif %}
+<div class="d-flex">
 
-     {% endfor %}
-     </ul>
+<div class="col-4">
+     <h2>All projects</h2>
+          <ul>
+          {% for project in projects|sort((a, b) => a.name <=> b.name) %}
+               <li>
+                    <span> {{ project.name}} ---- 
+                    <span id="{{ project.id }}" class="text-secondary">{{ project.plannedHours }} </span>
+                    /{{ project.duration}} h ----</span>
+                    <a href=" {{ ea_url().setRoute('app_assign', {id: project.id}) }} ">assign</a>
+                    <ul>
+                         {% for person in project.peopleWorkingOnIt %}
+                         <li>{{ person.name }}</li>
+                         {% endfor %}
 
-<h2>My assignements</h2>
-<ul>
-{% for assignment in assignments %}
-     <li>{{ assignment.project.name}}, {{ assignment.date|date("d/m/Y")}}, {{ assignment.allotedTime}} h </li> <!-- H:i:s -->
+                    </ul>
+               </li>
+          {% endfor %}
+          </ul>
 
-               <a href=" {{ path('remove_assignment', {id: assignment.id}) }} ">remove</a>
+     </div>
 
+     <div class="col-5">
+          {% for person in people %}
 
-{% endfor %}
-</ul>
-
-
-
-
-<div class="vh-100  p-0 m-0 col">
-     <div class="" id='calendar'></div>
+               <h3 class="">{{ person.name }}</h3>
+               <ul>
+                    {% for assignment in person.assignments|sort((a, b) => a.project.name <=> b.project.name) %}
+                    <li>
+                         <span> {{ assignment.project.name}}, {{ assignment.date|date("d/m/Y")}}, {{ assignment.allotedTime}} h ----<!-- H:i:s --></span>
+                         <a href=" {{ ea_url().setRoute('remove_assignment', {id: assignment.id}) }} ">remove</a>
+                    </li> 
+                    {% endfor %}
+               </ul>
+          {% endfor %}
+     </div>
+     
 </div>
+
+
+
+
+
+
+{# <div class="vh-100  p-0 m-0 col">
+     <div class="" id='calendar'></div>
+</div> #}
 
 {% endblock %}

@@ -4,56 +4,69 @@ namespace App\Controller;
 
 use App\Entity\Assignment;
 use App\Entity\Project;
+use App\Repository\PersonRepository;
 use App\Repository\ProjectRepository;
 use App\Service\ProjectManagerService;
 use DateTime;
-use Doctrine\ORM\EntityManagerInterface;
+use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGenerator;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
-use Symfony\Component\Validator\Constraints\Date;
 
+#[Route('/admin')]
 class HomeController extends AbstractController
 {
-    #[Route('/', name: 'app_home')]
-    public function index(ProjectRepository $projectRepository): Response
+
+    private $adminUrlGenerator;
+
+    public function __construct(AdminUrlGenerator $adminUrlGenerator)
+    {
+        $this->adminUrlGenerator = $adminUrlGenerator;
+    }
+
+
+    #[Route('/planning', name: 'planning')]
+    public function index(ProjectRepository $projectRepository, PersonRepository $personRepository)
     {
         $projects = $projectRepository->findAll();
-        $assignments = [] ;
+        $people = $personRepository->findAll() ;
 
-        if($this->getUser() != null){
-            $currentUser =$this->getUser()->getProfile();
-            $assignments = $currentUser->getAssignments();
-        }
 
-        
-        return $this->render('home/index.html.twig', [
-            'projects' => $projects,
-            'assignments'=> $assignments,
-        ] );
+        // overtime
+        // exact nb of hours
+
+       
+         return $this->render('home/index.html.twig', [
+             'projects' => $projects,
+             'people'=> $people,
+         ] );
     }
 
     #[Route('/assign/{id}', name: 'app_assign')]
-    public function assignProject(ProjectManagerService $projectManagerService, Project $project): Response
+    public function assignProject(ProjectManagerService $projectManagerService, Project $project, PersonRepository $personRepository): Response
     {
-        $user = $this->getUser();
+        $person = $personRepository->findBy(['id'=> 1]); // recup du titre du tableau
         $date = new DateTime(); // recup date du calendrier
-        $allotedTime = 2 ; // a recup d'un formulaire, max 8 càd 1 jour
+        $allotedTime = 8 ; // a recup d'un formulaire, max 8 càd 1 jour ?
 
-        $projectManagerService->assign($project, $date, $user, $allotedTime);
+        $projectManagerService->assign($project, $date, $person[0], $allotedTime);
+        
+        $url = $this->adminUrlGenerator
+        ->setRoute('planning')
+        ->generateUrl();
 
-        return $this->redirectToRoute('app_home', [
-            
-        ] );
+        return $this->redirect($url);
     }
 
     #[Route('/remove/assignment/{id}', name: 'remove_assignment')]
     public function removeAssignment(ProjectManagerService $projectManagerService, Assignment $assignment): Response
     {
         $projectManagerService->removeAssignment($assignment);
+        
+        $url = $this->adminUrlGenerator
+        ->setRoute('planning')
+        ->generateUrl();
 
-        return $this->redirectToRoute('app_home', [
-            
-        ] );
+        return $this->redirect($url);
     }
 }

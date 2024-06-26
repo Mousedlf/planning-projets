@@ -28,12 +28,19 @@ class Project
     private Collection $assignments;
 
     #[ORM\Column(nullable: true)]
-    private ?float $plannedHours = null;
+    private ?float $plannedHours = 0;
+
+    /**
+     * @var Collection<int, Person>
+     */
+    #[ORM\ManyToMany(targetEntity: Person::class, inversedBy: 'currentProjects')]
+    private Collection $peopleWorkingOnIt;
 
 
     public function __construct()
     {
         $this->assignments = new ArrayCollection();
+        $this->peopleWorkingOnIt = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -106,4 +113,29 @@ class Project
 
         return $this;
     }
+
+    /**
+     * @return Collection<int, Person>
+     */
+    public function getPeopleWorkingOnIt(): Collection
+    {
+        return $this->peopleWorkingOnIt;
+    }
+
+    public function addPeopleWorkingOnIt(Person $peopleWorkingOnIt): static
+    {
+        if (!$this->peopleWorkingOnIt->contains($peopleWorkingOnIt)) {
+            $this->peopleWorkingOnIt->add($peopleWorkingOnIt);
+        }
+
+        return $this;
+    }
+
+    public function removePeopleWorkingOnIt(Person $peopleWorkingOnIt): static
+    {
+        $this->peopleWorkingOnIt->removeElement($peopleWorkingOnIt);
+
+        return $this;
+    }
+
 }

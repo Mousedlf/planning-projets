@@ -16,10 +16,6 @@ class Assignment
 
     #[ORM\ManyToOne(inversedBy: 'assignments')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?Profile $profile = null;
-
-    #[ORM\ManyToOne(inversedBy: 'assignments')]
-    #[ORM\JoinColumn(nullable: false)]
     private ?Project $project = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
@@ -28,23 +24,15 @@ class Assignment
     #[ORM\Column(nullable: true)]
     private ?float $allotedTime = null;
 
+    #[ORM\ManyToOne(inversedBy: 'assignments')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Person $person = null;
+
 
 
     public function getId(): ?int
     {
         return $this->id;
-    }
-
-    public function getProfile(): ?Profile
-    {
-        return $this->profile;
-    }
-
-    public function setProfile(?Profile $profile): static
-    {
-        $this->profile = $profile;
-
-        return $this;
     }
 
     public function getProject(): ?Project
@@ -79,6 +67,18 @@ class Assignment
     public function setAllotedTime(?float $allotedTime): static
     {
         $this->allotedTime = $allotedTime;
+
+        return $this;
+    }
+
+    public function getPerson(): ?Person
+    {
+        return $this->person;
+    }
+
+    public function setPerson(?Person $person): static
+    {
+        $this->person = $person;
 
         return $this;
     }

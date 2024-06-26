@@ -2,22 +2,22 @@
 
 namespace App\Repository;
 
-use App\Entity\Profile;
+use App\Entity\Person;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * @extends ServiceEntityRepository<Profile>
+ * @extends ServiceEntityRepository<Person>
  */
-class ProfileRepository extends ServiceEntityRepository
+class PersonRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, Profile::class);
+        parent::__construct($registry, Person::class);
     }
 
     //    /**
-    //     * @return Profile[] Returns an array of Profile objects
+    //     * @return Person[] Returns an array of Person objects
     //     */
     //    public function findByExampleField($value): array
     //    {
@@ -31,7 +31,7 @@ class ProfileRepository extends ServiceEntityRepository
     //        ;
     //    }
 
-    //    public function findOneBySomeField($value): ?Profile
+    //    public function findOneBySomeField($value): ?Person
     //    {
     //        return $this->createQueryBuilder('p')
     //            ->andWhere('p.exampleField = :val')
