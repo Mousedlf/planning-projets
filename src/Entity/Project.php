@@ -27,6 +27,10 @@ class Project
     #[ORM\OneToMany(targetEntity: Assignment::class, mappedBy: 'project', orphanRemoval: true)]
     private Collection $assignments;
 
+    #[ORM\Column(nullable: true)]
+    private ?float $plannedHours = null;
+
+
     public function __construct()
     {
         $this->assignments = new ArrayCollection();
@@ -87,6 +91,18 @@ class Project
                 $assignment->setProject(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getPlannedHours(): ?float
+    {
+        return $this->plannedHours;
+    }
+
+    public function setPlannedHours(?float $plannedHours): static
+    {
+        $this->plannedHours = $plannedHours;
 
         return $this;
     }

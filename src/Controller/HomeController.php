@@ -7,6 +7,7 @@ use App\Entity\Project;
 use App\Repository\ProjectRepository;
 use App\Service\ProjectManagerService;
 use DateTime;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -15,19 +16,20 @@ use Symfony\Component\Validator\Constraints\Date;
 class HomeController extends AbstractController
 {
     #[Route('/', name: 'app_home')]
-    public function index(ProjectRepository $projectRepository, ProjectManagerService $projectManagerService,): Response
+    public function index(ProjectRepository $projectRepository): Response
     {
         $projects = $projectRepository->findAll();
+        $assignments = [] ;
 
-        $currentUser =$this->getUser()->getProfile();
-        $assignments = $currentUser->getAssignments();
+        if($this->getUser() != null){
+            $currentUser =$this->getUser()->getProfile();
+            $assignments = $currentUser->getAssignments();
+        }
 
-        $plannedHours = $projectManagerService->plannedHours(); // passer projet
-
+        
         return $this->render('home/index.html.twig', [
             'projects' => $projects,
             'assignments'=> $assignments,
-            'plannedHours'=> $plannedHours,
         ] );
     }
 
@@ -36,7 +38,7 @@ class HomeController extends AbstractController
     {
         $user = $this->getUser();
         $date = new DateTime(); // recup date du calendrier
-        $allotedTime = 4 ; // a recup d'un formulaire, max 8 càd 1 jour
+        $allotedTime = 2 ; // a recup d'un formulaire, max 8 càd 1 jour
 
         $projectManagerService->assign($project, $date, $user, $allotedTime);
 

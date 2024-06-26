@@ -1,23 +1,38 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello HomeController!{% endblock %}
+{% block title %}Planning{% endblock %}
 
 {% block body %}
 
  <a href="{{ path('admin') }}">Admin Dashboard : manage projects</a>
 
 <h2>All projects</h2>
-<ul>
-{% for project in projects %}
-<li>{{ project.name}}, Hours planned : /{{ project.duration}}</li>
-<a href=" {{ path('app_assign', {id: project.id}) }} ">assign</a>
-{% endfor %}
-</ul>
+     <ul>
+     {% for project in projects %}
+
+          <li>{{ project.name}}, Hours planned : {{ project.plannedHours }}/{{ project.duration}}</li>
+
+          {% if app.user != null %}
+               <a href=" {{ path('app_assign', {id: project.id}) }} ">assign</a>
+               
+
+               {% else %}
+               <a href=" {{ path('app_login') }} ">log in to assign yourself work</a>
+
+
+          {% endif %}
+
+     {% endfor %}
+     </ul>
 
 <h2>My assignements</h2>
 <ul>
 {% for assignment in assignments %}
      <li>{{ assignment.project.name}}, {{ assignment.date|date("d/m/Y")}}, {{ assignment.allotedTime}} h </li> <!-- H:i:s -->
+
+               <a href=" {{ path('remove_assignment', {id: assignment.id}) }} ">remove</a>
+
+
 {% endfor %}
 </ul>
 

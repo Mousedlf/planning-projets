@@ -30,6 +30,14 @@ class ProjectManagerService
         $assignment->setProfile($user->getProfile());
         $assignment->setAllotedTime($allotedTime);
 
+        $plannedHours = $project->getPlannedHours();
+
+        $updatedPlannedHours = $plannedHours + $allotedTime;
+
+        $project->setPlannedHours($updatedPlannedHours);
+
+
+        $this->manager->persist($project);
         $this->manager->persist($assignment);
         $this->manager->flush();
 
@@ -37,22 +45,22 @@ class ProjectManagerService
 
     public function removeAssignment(Assignment $assignment){
 
+        $project = $assignment->getProject();
+
+        $plannedHours = $project->getPlannedHours();
+        $plannedHours -= $assignment->getAllotedTime();
+        $project->setPlannedHours($plannedHours);
+
         $this->manager->remove($assignment);
         $this->manager->flush();
     }
 
-    public function plannedHours(Project $project){
+    // $totalHours = 0;
 
-        $totalHours = 0;
-
-        $assignements = $project->getAssignments();
-        
-        foreach($assignements as $assignment){
-            $totalHours += $assignment->getAllotedTime();
-        };
-        
-       return $totalHours;
-    }
-
+    // $assignements = $project->getAssignments();
+    
+    // foreach($assignements as $assignment){
+    //     $totalHours += $assignment->getAllotedTime();
+    // };
 
 }
