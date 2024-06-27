@@ -36,7 +36,7 @@
           </div>
           
 
-          <div class="col-5">
+          <div class="">
                {% for person in people %}
 
                     <h3 class="">{{ person.name }}</h3>
@@ -51,7 +51,6 @@
                {% endfor %}
           </div>
 
-     <p>{{json}}</p>     
 </div>
 
 
@@ -61,24 +60,9 @@
 
 
 
-{% endblock %}
-
-
-{% block javascripts %}
-{# <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.14/index.global.min.js'></script> #}
-
 <script>
 
-document.addEventListener('DOMContentLoaded', function() {
-        var calendarEl = document.getElementById('calendar');
-        var calendar = new FullCalendar.Calendar(calendarEl, {
-          initialView: 'dayGridMonth'
-        });
-        calendar.render();
-      });
-
-
-{# document.addEventListener('DOMContentLoaded', ()=> {
+ document.addEventListener('DOMContentLoaded', ()=> {
   
   const calendarEl = document.querySelector('#calendar');
 
@@ -105,11 +89,13 @@ document.addEventListener('DOMContentLoaded', function() {
       moreLinkClick : "popover", // ?*   
       eventBackgroundColor : '#378006',
       eventDisplay : 'background',
-     // events: {{ json }}
-    });
-  calendar.render();
-  }); #}
+      events: {{ json|raw }}
 
+    /// {{ json }}
+    });
+
+  calendar.render();
+  }); 
 </script>
 
 {% endblock %}
