@@ -9,107 +9,109 @@
 {% block main %}
 
 <style>
-
-.tab button.active {
-  background-color: limegreen;
-}
-
+.tab button.active {background-color: limegreen;}
 </style>
 
 
+<div class="d-flex"> 
+     <div class="col-4">
+          <h2>All projects</h2>
+               <ul>
+               {% for project in projects|sort((a, b) => a.name <=> b.name) %}
+                    <li>
+                         <span> {{ project.name}} ---- 
+                         <span id="{{ project.id }}" class="text-secondary">{{ project.plannedHours }} </span> <!-- changement couleur -->
+                         /{{ project.duration}} h ----</span>
+                         <a href=" {{ ea_url().setRoute('add_assignment', {id: project.id}) }} ">assign</a>
+                         <ul>
+                              {% for person in project.peopleWorkingOnIt %}
+                              <li>{{ person.name }}</li>
+                              {% endfor %}
 
-<div class="tab">
-{% for person in people %}
+                         </ul>
+                    </li>
+               {% endfor %}
+               </ul>
 
-  <button class="tablinks" onclick="openCity(event, '{{ person.name }}')">{{ person.name }}</button>
+          </div>
+          
 
-  {% endfor %}
+          <div class="col-5">
+               {% for person in people %}
 
-</div>
-
-{% for person in people %}
-     <div id="{{person.name}}" class="tabcontent">
-          <h3>page de {{ person.name }}</h3>
-
-
-          <div class="col-4">
-               <div class="" id='calendar'></div>
+                    <h3 class="">{{ person.name }}</h3>
+                    <ul>
+                         {% for assignment in person.assignments|sort((a, b) => a.project.name <=> b.project.name) %}
+                         <li>
+                              <span> {{ assignment.project.name}}, {{ assignment.date|date("d/m/Y  H:i:s ")}}, {{ assignment.allotedTime}} h ----<!-- H:i:s --></span>
+                              <a href=" {{ ea_url().setRoute('remove_assignment', {id: assignment.id}) }} ">remove</a>
+                         </li> 
+                         {% endfor %}
+                    </ul>
+               {% endfor %}
           </div>
 
+     <p>{{json}}</p>     
+</div>
+
+
+     <div class="col-6">
+     <div id='calendar'></div>
      </div>
-{% endfor %}
-
-{# <div class="d-flex"> #}
-
-{# <div class="col-4">
-     <h2>All projects</h2>
-          <ul>
-          {% for project in projects|sort((a, b) => a.name <=> b.name) %}
-               <li>
-                    <span> {{ project.name}} ---- 
-                    <span id="{{ project.id }}" class="text-secondary">{{ project.plannedHours }} </span> <!-- changement couleur -->
-                    /{{ project.duration}} h ----</span>
-                    <a href=" {{ ea_url().setRoute('app_assign', {id: project.id}) }} ">assign</a>
-                    <ul>
-                         {% for person in project.peopleWorkingOnIt %}
-                         <li>{{ person.name }}</li>
-                         {% endfor %}
-
-                    </ul>
-               </li>
-          {% endfor %}
-          </ul>
-
-     </div>
-
-     <div class="col-5">
-          {% for person in people %}
-
-               <h3 class="">{{ person.name }}</h3>
-               <ul>
-                    {% for assignment in person.assignments|sort((a, b) => a.project.name <=> b.project.name) %}
-                    <li>
-                         <span> {{ assignment.project.name}}, {{ assignment.date|date("d/m/Y")}}, {{ assignment.allotedTime}} h ----<!-- H:i:s --></span>
-                         <a href=" {{ ea_url().setRoute('remove_assignment', {id: assignment.id}) }} ">remove</a>
-                    </li> 
-                    {% endfor %}
-               </ul>
-          {% endfor %}
-     </div>
-
-</div> #}
-
 
 
 
 {% endblock %}
+
 
 {% block javascripts %}
+{# <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.14/index.global.min.js'></script> #}
 
 <script>
-    {% block importmap %}{{ importmap('app') }}{% endblock %}
 
-function openCity(evt, cityName) {
-    // Declare all variables
-    var i, tabcontent, tablinks;
+document.addEventListener('DOMContentLoaded', function() {
+        var calendarEl = document.getElementById('calendar');
+        var calendar = new FullCalendar.Calendar(calendarEl, {
+          initialView: 'dayGridMonth'
+        });
+        calendar.render();
+      });
+
+
+{# document.addEventListener('DOMContentLoaded', ()=> {
   
-    // Get all elements with class="tabcontent" and hide them
-    tabcontent = document.getElementsByClassName("tabcontent");
-    for (i = 0; i < tabcontent.length; i++) {
-      tabcontent[i].style.display = "none";
-    }
-  
-    // Get all elements with class="tablinks" and remove the class "active"
-    tablinks = document.getElementsByClassName("tablinks");
-    for (i = 0; i < tablinks.length; i++) {
-      tablinks[i].className = tablinks[i].className.replace(" active", "");
-    }
-  
-    // Show the current tab, and add an "active" class to the button that opened the tab
-    document.getElementById(cityName).style.display = "block";
-    evt.currentTarget.className += " active";
-  } 
-  </script>
-           
+  const calendarEl = document.querySelector('#calendar');
+
+  const calendar = new FullCalendar.Calendar(calendarEl, {
+      initialView: 'dayGridYear',
+      editable: true,
+      buttonText: {
+        today:false,
+      },
+      height: "100%",
+    //  weekNumbers : true,
+      weekText : "",
+      navLinks : true,
+      navLinkDayClick: function(date) {
+        console.log(date.toISOString());
+      },
+    //  navLinkWeekClick: function() {},
+      aspectRatio: 10,
+      contentHeight: 'auto',
+      multiMonthMaxColumns: 1,
+      weekends : false,
+      dayHeaders : false ,
+      handleWindowResize: true,
+      moreLinkClick : "popover", // ?*   
+      eventBackgroundColor : '#378006',
+      eventDisplay : 'background',
+     // events: {{ json }}
+    });
+  calendar.render();
+  }); #}
+
+</script>
 
 {% endblock %}
+
+{# {% block importmap %}{{ importmap('app') }}{% endblock %} #}

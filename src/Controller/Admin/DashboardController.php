@@ -14,6 +14,12 @@ use EasyCorp\Bundle\EasyAdminBundle\Config\Assets;
 
 class DashboardController extends AbstractDashboardController
 {
+    #[Route('/', name: 'app')]
+    public function app(): Response
+    {
+         return $this->redirectToRoute("admin"); 
+    }
+
     #[Route('/admin', name: 'admin')]
     public function index(): Response
     {

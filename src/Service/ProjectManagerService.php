@@ -5,7 +5,6 @@ namespace App\Service;
 use App\Entity\Assignment;
 use App\Entity\Person;
 use App\Entity\Project;
-use App\Entity\User;
 use App\Repository\AssignmentRepository;
 use App\Repository\ProjectRepository;
 use DateTime;
@@ -31,14 +30,22 @@ class ProjectManagerService
         $assignment->setAllotedTime($allotedTime);
         $assignment->setPerson($person);
 
-        $plannedHours = $project->getPlannedHours();
-        $updatedPlannedHours = $plannedHours + $allotedTime;
-        $project->setPlannedHours($updatedPlannedHours);
+        $plannedHoursOnProject = 0;
+        $allAssignmentsLinkedToProject = $project->getAssignments();
+    
+        foreach($allAssignmentsLinkedToProject as $as){
+            $plannedHoursOnProject += $as->getAllotedTime();
+        }
+        $updatedPlannedHours = $plannedHoursOnProject + $allotedTime;
 
+        $project->setPlannedHours($updatedPlannedHours);
         $project->addPeopleWorkingOnIt($person);
 
         $this->manager->persist($project);
         $this->manager->persist($assignment);
+
+      //  dd($project);
+
         $this->manager->flush();
     }
 
@@ -46,30 +53,38 @@ class ProjectManagerService
 
         $project = $assignment->getProject();
         $person = $assignment->getPerson();
-
-        $plannedHours = $project->getPlannedHours();
-        $plannedHours -= $assignment->getAllotedTime();
-        $project->setPlannedHours($plannedHours);
-
         $allAssignmentsLinkedToProject = $project->getAssignments();
+        $numberOfAssignementsOfPerson = 0;
+        $totalPlannedHours = 0;
+
+
+        // Planned Hours
+        foreach($allAssignmentsLinkedToProject as $as){
+            $totalPlannedHours += $as->getAllotedTime();
+        }
+        $afterRemovedAssignementPlannedHours = $totalPlannedHours - $assignment->getAllotedTime();
+        $project->setPlannedHours($afterRemovedAssignementPlannedHours);
 
         if(count($allAssignmentsLinkedToProject) == 1){
             $project->setPlannedHours(0);
         } 
-        // encore des verifs au niveau du compteur necessaires
-    
-        $numberAssignementsOfPerson = 0;
-        foreach($allAssignmentsLinkedToProject as $assignment){
+       
+        // People working on project
+        foreach($allAssignmentsLinkedToProject as $as){
             if($assignment->getPerson() == $person){
-                $numberAssignementsOfPerson += 1;
+                $numberOfAssignementsOfPerson += 1;
             }
         }
-        if($numberAssignementsOfPerson = 1 ){
-            $project->removePeopleWorkingOnIt($person);
+        if($numberOfAssignementsOfPerson == 1 ){
+            $project->removePeopleWorkingOnIt($person); // revoir peopleWorkingOnit
         }
 
-        $this->manager->persist($project);
+
         $this->manager->remove($assignment);
+
+
+
+        $this->manager->persist($project);
         $this->manager->flush();
     }
 
