@@ -38,8 +38,6 @@ class HomeController extends AbstractController
             'projects' => $projects,
             'people'=> $people,
             'json'=> $json,
-
-
         ] );
 
     }
@@ -71,8 +69,6 @@ class HomeController extends AbstractController
             'json'=> $json,
             'projects' => $projects,
             'people'=> $people,
-
-
         ] );
    
 
@@ -80,7 +76,7 @@ class HomeController extends AbstractController
 
 
     #[Route('/assign/{id}/{date}', name: 'add_assignment')]
-    public function assignProject(Request $request,$date ,ProjectManagerService $projectManagerService, Project $project, PersonRepository $personRepository): Response
+    public function assignProject(Request $request,$date, ProjectRepository $projectRepository,ProjectManagerService $projectManagerService, Project $project, PersonRepository $personRepository): Response
     {
         $referer = $request->headers->get('referer');
         $bricolageId = substr($referer, strpos($referer, "id%5D=") + 6);
@@ -90,15 +86,34 @@ class HomeController extends AbstractController
         $allotedTime = 8 ; // a recup d'un formulaire, max 8 càd 1 jour ?
         $d = new DateTime($date);
 
-     //   dd($person);
 
         $projectManagerService->assign($project, $d, $person[0], $allotedTime);
         
-        $url = $this->adminUrlGenerator
-            ->setRoute('planning')
-            ->generateUrl();
+        $projects = $projectRepository->findAll();
+        $people = $personRepository->findAll() ;
 
-        return $this->redirect($url);
+        $allAssignments = $person[0]->getAssignments();
+
+        $json = "";
+        $data = [];
+
+        foreach($allAssignments as $as){
+
+            $event = [
+                'id'=> $as->getId(),
+                'start'=> $as->getDate()->format('Y-m-d'),
+                'project'=> $as->getProject()->getName(),
+            ];
+            $data[]=$event;
+        }
+
+        $json = json_encode($data);
+
+        return $this->render('home/index.html.twig', [
+            'json'=> $json,
+            'projects' => $projects,
+            'people'=> $people,
+        ] );
     }
 
 

@@ -8,7 +8,7 @@
 
 {% block main %}
 
- <div id="myDIV" >
+ <div id="myDIV" class="">
      <ul>
      {% for project in projects|sort((a, b) => a.name <=> b.name) %}
           <li>
@@ -23,16 +23,17 @@
      </ul> 
 </div>
 
-
-
-<div class=" d-flex">
-
-     <div class="pe-3">
           <div class="d-flex mb-4">
                {% for person in people %}
                     <a href="{{ ea_url().setRoute('planning_person', {id:person.id})}}" class="btn">{{ person.name}} </a>
                {% endfor %}
           </div>
+
+
+<div class="d-flex">
+
+     <div class="pe-3">
+
 
 
           <ul class="">

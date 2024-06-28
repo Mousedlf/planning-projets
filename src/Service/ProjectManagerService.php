@@ -44,7 +44,7 @@ class ProjectManagerService
         $this->manager->persist($project);
         $this->manager->persist($assignment);
 
-      //  dd($project);
+      //  dd($assignment );
 
         $this->manager->flush();
     }
