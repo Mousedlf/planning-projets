@@ -8,7 +8,7 @@
 
 {% block main %}
 
- {#<div id="myDIV" >
+ <div id="myDIV" >
      <ul>
      {% for project in projects|sort((a, b) => a.name <=> b.name) %}
           <li>
@@ -18,48 +18,46 @@
 
                {% set date = app.request.cookies.get('date')  %}
                <a href=" {{ ea_url().setRoute('add_assignment', {id: project.id, date: date}) }} ">assign</a>
-               <ul>
-                    {% for person in project.peopleWorkingOnIt %}
-                    <li>{{ person.name }}</li>
-                    {% endfor %}
-               </ul>
           </li>
      {% endfor %}
      </ul> 
-</div>#}
-
-<div class="d-flex">
-     {% for person in people %}
-          <a href="{{ ea_url().setRoute('planning_person', {id:person.id})}}" class="btn">{{ person.name}} </a>
-     {% endfor %}
 </div>
 
-<div class="d-flex mt-4">
 
-<div class="col-3">
-     <ul class="">
 
-     {% for project in projects|sort((a, b) => a.name <=> b.name) %}
-          <li>
-               <span> {{ project.name}} ---- 
-               <span id="{{ project.id }}" class="text-secondary">{{ project.plannedHours }} </span> <!-- changement couleur -->
-               /{{ project.duration}} h</span>
+<div class=" d-flex">
 
-               {% set date = app.request.cookies.get('date')  %}
-               {# <a href=" {{ ea_url().setRoute('add_assignment', {id: project.id, date: date}) }} ">assign</a> #}
-               <ul>
-                    {% for person in project.peopleWorkingOnIt %}
-                    <li>{{ person.name }}</li>
-                    {% endfor %}
-               </ul>
-          </li>
-     {% endfor %}
-     </ul> 
-</div >
+     <div class="pe-3">
+          <div class="d-flex mb-4">
+               {% for person in people %}
+                    <a href="{{ ea_url().setRoute('planning_person', {id:person.id})}}" class="btn">{{ person.name}} </a>
+               {% endfor %}
+          </div>
 
-<div class="col-9">
-     <div id='calendar'></div>
-</div >
+
+          <ul class="">
+
+          {% for project in projects|sort((a, b) => a.name <=> b.name) %}
+               {# <li>
+                    <span> {{ project.name}} ---- 
+                    <span id="{{ project.id }}" class="text-secondary">{{ project.plannedHours }} </span> <!-- changement couleur -->
+                    /{{ project.duration}} h</span>
+
+                    {# {% set date = app.request.cookies.get('date')  %} #}
+                    {# <a href=" {{ ea_url().setRoute('add_assignment', {id: project.id, date: date}) }} ">assign</a> #}
+                    <ul>
+                         {# {% for person in project.peopleWorkingOnIt %}
+                         <li>{{ person.name }}</li>
+                         {% endfor %} #}
+                    </ul>
+               </li> 
+          {% endfor %}
+          </ul> 
+     </div>
+
+     <div class="col-9">
+          <div id='calendar'></div>
+     </div >
 
 </div>
 
@@ -126,7 +124,7 @@
                let selectedDate = date.dateStr; 
                eraseCookie("date");
                createCookie("date", selectedDate);  
-               location.reload(); // pb avec modal logiquement
+            //   location.reload(); // pb avec modal logiquement
                showModal()
           }
      });

@@ -5,15 +5,16 @@ namespace App\Controller;
 use App\Entity\Assignment;
 use App\Entity\Person;
 use App\Entity\Project;
-use App\Repository\AssignmentRepository;
 use App\Repository\PersonRepository;
 use App\Repository\ProjectRepository;
 use App\Service\ProjectManagerService;
 use DateTime;
 use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGenerator;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use function Symfony\Component\String\u;
 
 #[Route('/admin')]
 class HomeController extends AbstractController
@@ -79,13 +80,17 @@ class HomeController extends AbstractController
 
 
     #[Route('/assign/{id}/{date}', name: 'add_assignment')]
-    public function assignProject($date ,ProjectManagerService $projectManagerService, Project $project, PersonRepository $personRepository): Response
+    public function assignProject(Request $request,$date ,ProjectManagerService $projectManagerService, Project $project, PersonRepository $personRepository): Response
     {
-        $person = $personRepository->findBy(['id'=> 2]); // recup du titre du tableau
-        $allotedTime = 2 ; // a recup d'un formulaire, max 8 càd 1 jour ?
+        $referer = $request->headers->get('referer');
+        $bricolageId = substr($referer, strpos($referer, "id%5D=") + 6);
+        
+        $person = $personRepository->findBy(['id'=> $bricolageId]); // recup du titre du tableau
+
+        $allotedTime = 8 ; // a recup d'un formulaire, max 8 càd 1 jour ?
         $d = new DateTime($date);
 
-        dd($person);
+     //   dd($person);
 
         $projectManagerService->assign($project, $d, $person[0], $allotedTime);
         
