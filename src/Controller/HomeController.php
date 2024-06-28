@@ -66,13 +66,7 @@ class HomeController extends AbstractController
     {
         $person = $personRepository->findBy(['id'=> 1]); // recup du titre du tableau
         $allotedTime = 2 ; // a recup d'un formulaire, max 8 càd 1 jour ?
-
         $d = new DateTime($date);
-       // dd($d);
-
-        // $date = // recup date du calendrier
-
-
 
         $projectManagerService->assign($project, $d, $person[0], $allotedTime);
         
