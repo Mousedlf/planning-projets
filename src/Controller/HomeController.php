@@ -29,7 +29,7 @@ class HomeController extends AbstractController
     #[Route('/planning', name: 'planning')]
     public function index(ProjectRepository $projectRepository,  PersonRepository $personRepository)
     {
-        $projects = $projectRepository->findAll();
+        $projects = [];
         $people = $personRepository->findAll() ;
         $json = "";
 
@@ -43,27 +43,12 @@ class HomeController extends AbstractController
     }
 
     #[Route('/planning/{id}', name: 'planning_person')]
-    public function getAssignmentsOfPerson(Person $person, ProjectRepository $projectRepository, PersonRepository $personRepository,)
+    public function getAssignmentsOfPerson(Person $person, ProjectRepository $projectRepository, PersonRepository $personRepository, ProjectManagerService $projectManagerService)
     {
         $projects = $projectRepository->findAll();
         $people = $personRepository->findAll() ;
 
-        $allAssignments = $person->getAssignments();
-
-        $json = "";
-        $data = [];
-
-        foreach($allAssignments as $as){
-
-            $event = [
-                'id'=> $as->getId(),
-                'start'=> $as->getDate()->format('Y-m-d'),
-                'project'=> $as->getProject()->getName(),
-            ];
-            $data[]=$event;
-        }
-
-        $json = json_encode($data);
+        $json = $projectManagerService->getAssignmentsOfPerson($person);
 
         return $this->render('home/index.html.twig', [
             'json'=> $json,
@@ -92,22 +77,9 @@ class HomeController extends AbstractController
         $projects = $projectRepository->findAll();
         $people = $personRepository->findAll() ;
 
-        $allAssignments = $person[0]->getAssignments();
+        $json = $projectManagerService->getAssignmentsOfPerson($person[0]);
 
-        $json = "";
-        $data = [];
-
-        foreach($allAssignments as $as){
-
-            $event = [
-                'id'=> $as->getId(),
-                'start'=> $as->getDate()->format('Y-m-d'),
-                'project'=> $as->getProject()->getName(),
-            ];
-            $data[]=$event;
-        }
-
-        $json = json_encode($data);
+      //  dd($json);
 
         return $this->render('home/index.html.twig', [
             'json'=> $json,

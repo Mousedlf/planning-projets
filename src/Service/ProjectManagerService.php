@@ -22,6 +22,28 @@ class ProjectManagerService
         return $projects;
     }
 
+    public function getAssignmentsOfPerson(Person $person){
+
+        $allAssignments = $person->getAssignments();
+        $json = "";
+        $data = [];
+
+        foreach($allAssignments as $as){
+
+            $event = [
+                'id'=> $as->getId(),
+                'start'=> $as->getDate()->format('Y-m-d'),
+                'project'=> $as->getProject()->getName(),
+            ];
+            $data[]=$event;
+        }
+
+        $json = json_encode($data);
+
+        return $json;
+    }
+
+
     public function assign(Project $project, DateTime $date, Person $person, float $allotedTime){
 
         $assignment = new Assignment();
@@ -43,6 +65,7 @@ class ProjectManagerService
 
         $this->manager->persist($project);
         $this->manager->persist($assignment);
+
 
       //  dd($assignment );
 
