@@ -44,7 +44,7 @@ class HomeController extends AbstractController
             $event = [
                 'id'=> $as->getId(),
                 'start'=> $as->getDate()->format('Y-m-d'),
-              //  'project'=> $as->getProject()->getName(),
+                'project'=> $as->getProject()->getName(),
             ];
             $data[]=$event;
         }
