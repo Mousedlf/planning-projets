@@ -8,7 +8,7 @@
 
 {% block main %}
 
-<div id="myDIV" class="border p-3  ms-4">
+ {#<div id="myDIV" >
      <ul>
      {% for project in projects|sort((a, b) => a.name <=> b.name) %}
           <li>
@@ -25,21 +25,41 @@
                </ul>
           </li>
      {% endfor %}
-     </ul>
+     </ul> 
+</div>#}
+
+<div class="d-flex">
+     {% for person in people %}
+          <a href="{{ ea_url().setRoute('planning_person', {id:person.id})}}" class="btn">{{ person.name}} </a>
+     {% endfor %}
 </div>
 
-<div class="container">
+<div class="d-flex mt-4">
 
-      <div class="d-flex">      
-          {% for person in people %}
-          <div class="col-4 px-2">  
-               <h3>{{ person.name}} </h3>
-               {% set calendarId = person.name %}
-               <div id='{{ calendarId }}'></div>
-          </div>
-          {% endfor %}
-     </div>
+<div class="col-3">
+     <ul class="">
 
+     {% for project in projects|sort((a, b) => a.name <=> b.name) %}
+          <li>
+               <span> {{ project.name}} ---- 
+               <span id="{{ project.id }}" class="text-secondary">{{ project.plannedHours }} </span> <!-- changement couleur -->
+               /{{ project.duration}} h</span>
+
+               {% set date = app.request.cookies.get('date')  %}
+               {# <a href=" {{ ea_url().setRoute('add_assignment', {id: project.id, date: date}) }} ">assign</a> #}
+               <ul>
+                    {% for person in project.peopleWorkingOnIt %}
+                    <li>{{ person.name }}</li>
+                    {% endfor %}
+               </ul>
+          </li>
+     {% endfor %}
+     </ul> 
+</div >
+
+<div class="col-9">
+     <div id='calendar'></div>
+</div >
 
 </div>
 
@@ -80,45 +100,40 @@
 
 // ------- CALENDAR
 
- const people = ['Greg', 'Nico', 'Caro']
 
-function displayCalendar(person){
-
-     const calendarEl = document.querySelector('#'+person)
+     const calendarEl = document.querySelector('#calendar')
 
      const calendar = new FullCalendar.Calendar(calendarEl, {
-     initialView: 'dayGridYear',
-     editable: true,
-     contentHeight: 600,
-       buttonText: {
-        today:false,
-      },
-     //height: "100%",
-     weekText : "",
-     navLinks : false,
-     multiMonthMaxColumns: 1,
-     weekends : false,
-     dayHeaders : false ,
-     handleWindowResize: true,
-     eventBackgroundColor : '#378006',
-     eventDisplay : 'background',
-     events: {{ json|raw }},
-     dateClick: function(date, jsEvent, view) {  
-          let selectedDate = date.dateStr; 
-          eraseCookie("date");
-          createCookie("date", selectedDate);  
-          location.reload(); // pb avec modal logiquement
-          showModal()
-     }
-    });
+          initialView: 'multiMonthYear',
+          editable: true,
+       //   contentHeight: 600,
+          buttonText: {
+          today:false,
+          },
+          multiMonthMinWidth : 200,
+          weekText : "",
+          navLinks : false,
+        //  multiMonthMaxColumns: 3,
+          weekends : false,
+          dayHeaders : false ,
+          handleWindowResize: true,
+          eventBackgroundColor : '#378006',
+          eventDisplay : 'background',
+          events: 
+                {{ json|raw }},
+          
+          dateClick: function(date, jsEvent, view) {  
+               let selectedDate = date.dateStr; 
+               eraseCookie("date");
+               createCookie("date", selectedDate);  
+               location.reload(); // pb avec modal logiquement
+               showModal()
+          }
+     });
 
      calendar.render();
     
-}
-
- people.forEach((person) => displayCalendar(person));
-
-  }); 
+}); 
 
   
 

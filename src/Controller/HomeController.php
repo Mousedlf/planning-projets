@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Assignment;
+use App\Entity\Person;
 use App\Entity\Project;
 use App\Repository\AssignmentRepository;
 use App\Repository\PersonRepository;
@@ -25,17 +26,31 @@ class HomeController extends AbstractController
 
 
     #[Route('/planning', name: 'planning')]
-    public function index(ProjectRepository $projectRepository, PersonRepository $personRepository, AssignmentRepository $assignmentRepository)
+    public function index(ProjectRepository $projectRepository,  PersonRepository $personRepository)
+    {
+        $projects = $projectRepository->findAll();
+        $people = $personRepository->findAll() ;
+        $json = "";
+
+
+        return $this->render('home/index.html.twig', [
+            'projects' => $projects,
+            'people'=> $people,
+            'json'=> $json,
+
+
+        ] );
+
+    }
+
+    #[Route('/planning/{id}', name: 'planning_person')]
+    public function getAssignmentsOfPerson(Person $person, ProjectRepository $projectRepository, PersonRepository $personRepository,)
     {
         $projects = $projectRepository->findAll();
         $people = $personRepository->findAll() ;
 
-        // overtime
-        // exact nb of hours :  if($project->getDuration() > $project->getPlannedHours()){
+        $allAssignments = $person->getAssignments();
 
-        $allAssignments = $assignmentRepository->findAll();
-
-      //  dd(count($allAssignments));
         $json = "";
         $data = [];
 
@@ -49,24 +64,28 @@ class HomeController extends AbstractController
             $data[]=$event;
         }
 
-        // dd($data);
         $json = json_encode($data);
-        // dd($json);
 
-         return $this->render('home/index.html.twig', [
-             'projects' => $projects,
-             'people'=> $people,
-             'json'=> $json
-         ] );
+        return $this->render('home/index.html.twig', [
+            'json'=> $json,
+            'projects' => $projects,
+            'people'=> $people,
+
+
+        ] );
+   
+
     }
 
 
     #[Route('/assign/{id}/{date}', name: 'add_assignment')]
-    public function assignProject($date, ProjectManagerService $projectManagerService, Project $project, PersonRepository $personRepository): Response
+    public function assignProject($date ,ProjectManagerService $projectManagerService, Project $project, PersonRepository $personRepository): Response
     {
-        $person = $personRepository->findBy(['id'=> 1]); // recup du titre du tableau
+        $person = $personRepository->findBy(['id'=> 2]); // recup du titre du tableau
         $allotedTime = 2 ; // a recup d'un formulaire, max 8 càd 1 jour ?
         $d = new DateTime($date);
+
+        dd($person);
 
         $projectManagerService->assign($project, $d, $person[0], $allotedTime);
         
