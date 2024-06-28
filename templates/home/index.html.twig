@@ -13,7 +13,9 @@
 </style>
 
 
+ {# <h1>{{app.request.cookies.get('date')}}</h1>  #}
 
+{# {{ dump(app.request.cookies) }} #}
 
 <div class="d-flex"> 
 
@@ -29,7 +31,9 @@
                          <span> {{ project.name}} ---- 
                          <span id="{{ project.id }}" class="text-secondary">{{ project.plannedHours }} </span> <!-- changement couleur -->
                          /{{ project.duration}} h ----</span>
-                         <a href=" {{ ea_url().setRoute('add_assignment', {id: project.id}) }} ">assign</a>
+
+                         {% set date = app.request.cookies.get('date')  %}
+                         <a href=" {{ ea_url().setRoute('add_assignment', {id: project.id, date: date}) }} ">assign</a>
                          <ul>
                               {% for person in project.peopleWorkingOnIt %}
                               <li>{{ person.name }}</li>
@@ -54,9 +58,23 @@
   const calendarEl = document.querySelector('#calendar');
   const modalEl =  document.querySelector('#schedule-add');
 
+     function createCookie(name,value,days) {
+     if (days) {
+        var date = new Date();
+        date.setTime(date.getTime() + (days * 24 * 60 * 60 *1000));
+        var expires = "; expires=" + date.toGMTString();
+     } else {
+        var expires = "";
+     }
+        document.cookie = name + "=" + value + expires + "; path=/";
+     }
+
+     function eraseCookie(name) {
+     createCookie(name,"",-1);
+     }
+  
+
      function showModal(date){
-          console.log('date recup :', date.dateStr)
-          const selectedDate = date.dateStr
 
           var modalEl = document.getElementById("myDIV");
           if (modalEl.style.display === "none") {
@@ -88,8 +106,16 @@
 
      events: {{ json|raw }},
 
-     dateClick: function(date, jsEvent, view) {         
-          showModal(date)
+     dateClick: function(date, jsEvent, view) {   
+
+          let selectedDate = date.dateStr;
+
+          eraseCookie("date");
+          createCookie("date", selectedDate);  
+          
+          location.reload();
+
+          showModal()
      }
 
     });

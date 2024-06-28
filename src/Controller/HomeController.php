@@ -61,14 +61,20 @@ class HomeController extends AbstractController
     }
 
 
-    #[Route('/assign/{id}', name: 'add_assignment')]
-    public function assignProject(ProjectManagerService $projectManagerService, Project $project, PersonRepository $personRepository): Response
+    #[Route('/assign/{id}/{date}', name: 'add_assignment')]
+    public function assignProject($date, ProjectManagerService $projectManagerService, Project $project, PersonRepository $personRepository): Response
     {
         $person = $personRepository->findBy(['id'=> 1]); // recup du titre du tableau
-        $date = new DateTime(); // recup date du calendrier
         $allotedTime = 2 ; // a recup d'un formulaire, max 8 càd 1 jour ?
 
-        $projectManagerService->assign($project, $date, $person[0], $allotedTime);
+        $d = new DateTime($date);
+       // dd($d);
+
+        // $date = // recup date du calendrier
+
+
+
+        $projectManagerService->assign($project, $d, $person[0], $allotedTime);
         
         $url = $this->adminUrlGenerator
             ->setRoute('planning')
