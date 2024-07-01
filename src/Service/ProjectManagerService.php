@@ -43,8 +43,32 @@ class ProjectManagerService
         return $json;
     }
 
+    public function getAssignmentsOfSelectedDay($date, Person $person){
+
+        $assignmentsOfSelectedDay = [];
+        $assignments = $person->getAssignments();
+
+        foreach($assignments as $as){
+            if($as->getDate() == $date){
+                $assignmentsOfSelectedDay[] = $as;
+            }
+        }
+
+        dd($assignmentsOfSelectedDay);
+
+
+    }
+
 
     public function assign(Project $project, DateTime $date, Person $person, float $allotedTime){
+
+        $plannedHoursOnProject = 0;
+        $allAssignmentsLinkedToProject = $project->getAssignments();
+        
+
+        // si deja une tache a cette date enlever tache et remplacer.
+        
+
 
         $assignment = new Assignment();
         $assignment->setProject($project);
@@ -52,9 +76,7 @@ class ProjectManagerService
         $assignment->setAllotedTime($allotedTime);
         $assignment->setPerson($person);
 
-        $plannedHoursOnProject = 0;
-        $allAssignmentsLinkedToProject = $project->getAssignments();
-    
+
         foreach($allAssignmentsLinkedToProject as $as){
             $plannedHoursOnProject += $as->getAllotedTime();
         }
@@ -69,7 +91,7 @@ class ProjectManagerService
 
       //  dd($assignment );
 
-        $this->manager->flush();
+      //  $this->manager->flush();
     }
 
     public function removeAssignment(Assignment $assignment){

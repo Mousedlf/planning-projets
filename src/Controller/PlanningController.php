@@ -17,7 +17,7 @@ use Symfony\Component\Routing\Attribute\Route;
 use function Symfony\Component\String\u;
 
 #[Route('/admin')]
-class HomeController extends AbstractController
+class PlanningController extends AbstractController
 {
     private $adminUrlGenerator;
     public function __construct(AdminUrlGenerator $adminUrlGenerator)
@@ -33,14 +33,14 @@ class HomeController extends AbstractController
         $people = $personRepository->findAll() ;
         $json = "";
 
-
         return $this->render('home/index.html.twig', [
             'projects' => $projects,
             'people'=> $people,
             'json'=> $json,
         ] );
-
     }
+
+
 
     #[Route('/planning/{id}', name: 'planning_person')]
     public function getAssignmentsOfPerson(Person $person, ProjectRepository $projectRepository, PersonRepository $personRepository, ProjectManagerService $projectManagerService)
@@ -63,10 +63,12 @@ class HomeController extends AbstractController
     #[Route('/assign/{id}/{date}', name: 'add_assignment')]
     public function assignProject(Request $request,$date, ProjectRepository $projectRepository,ProjectManagerService $projectManagerService, Project $project, PersonRepository $personRepository): Response
     {
+
+        // recup id personne selectionnée
         $referer = $request->headers->get('referer');
         $bricolageId = substr($referer, strpos($referer, "id%5D=") + 6);
-        
         $person = $personRepository->findBy(['id'=> $bricolageId]); // recup du titre du tableau
+
 
         $allotedTime = 8 ; // a recup d'un formulaire, max 8 càd 1 jour ?
         $d = new DateTime($date);

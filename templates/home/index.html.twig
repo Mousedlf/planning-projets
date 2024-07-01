@@ -2,131 +2,162 @@
 
 {% block content_title %}Planning{% endblock %}
 
+  {% block head_metas %}
+     <meta name="turbo-refresh-method" content="morph">
+  {% endblock head_metas %}
+  
 {# {% block page_actions %}
     <a class="btn btn-primary" href="...">Some Action</a>
 {% endblock %} #}
 
 {% block main %}
 
+<style>
 
 
-          <div class="d-flex mb-4">
-               {% for person in people %}
-                    <a href="{{ ea_url().setRoute('planning_person', {id:person.id})}}" class="btn">{{ person.name}} </a>
-               {% endfor %}
-          </div>
+  .modal {
+    display: flex;
+    flex-direction: column;
+    right: 0;
+    width: 20%;
+    padding: 1rem;
+    z-index: 2;
+    background-color: white;
+    border: 1px solid #ddd;
+  }
+  
+  .modal .flex {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  
+  .hidden {
+    display: none;
+  }
 
+</style>
 
-<div class="d-flex">
+ {# {{ dump(app.request.cookies) }}  #}
 
-
-          {# {% for project in projects|sort((a, b) => a.name <=> b.name) %} #}
-               {# <li>
+ <section class=" modal hidden" > {#   #}
+        <div class="flex" data-turbo-permanent>
+          <button class="btn-close"></button>
+        </div>
+        <div>
+        
+          <ul>
+          {% for project in projects|sort((a, b) => a.name <=> b.name) %}
+               <li>
                     <span> {{ project.name}} ---- 
                     <span id="{{ project.id }}" class="text-secondary">{{ project.plannedHours }} </span> <!-- changement couleur -->
                     /{{ project.duration}} h</span>
 
                     {# {% set date = app.request.cookies.get('date')  %} #}
-                    {# <a href=" {{ ea_url().setRoute('add_assignment', {id: project.id, date: date}) }} ">assign</a> #}
-                    {# <ul> #}
-                         {# {% for person in project.peopleWorkingOnIt %}
-                         <li>{{ person.name }}</li>
-                         {% endfor %} #}
-                    {# </ul> #}
-               {# </li>  #}
-          {# {% endfor %} #}
+                    <a href=" {{ ea_url().setRoute('add_assignment', {id: project.id, date: date}) }} " class="btn btn-primary">assign</a>
+                    {# <ul> 
+                              {% for person in project.peopleWorkingOnIt %}
+                              <li>{{ person.name }}</li>
+                              {% endfor %} 
+                         </ul> #}
+               </li>
+          {% endfor %}
+          </ul> 
+     
+        </div>
+      
+      </section>
+      
+
+          <div class="d-flex">
+               {% for person in people %}
+                    <a href="{{ ea_url().setRoute('planning_person', {id:person.id})}}" class="btn">{{ person.name}} </a>
+               {% endfor %}
+                         <h1>{{app.request.cookies.get('date')}}</h1>
+
+          </div>
+
 
      <div class="col-9">
           <div id='calendar'></div>
      </div >
 
-      <div id="myDIV" class="">
-     <ul>
-     {% for project in projects|sort((a, b) => a.name <=> b.name) %}
-          <li>
-               <span> {{ project.name}} ---- 
-               <span id="{{ project.id }}" class="text-secondary">{{ project.plannedHours }} </span> <!-- changement couleur -->
-               /{{ project.duration}} h ----</span>
 
-               {% set date = app.request.cookies.get('date')  %}
-               <a href=" {{ ea_url().setRoute('add_assignment', {id: project.id, date: date}) }} ">assign</a>
-          </li>
-     {% endfor %}
-     </ul> 
-</div>
 
-</div>
+
 
 
 
 <script>
 
- document.addEventListener('DOMContentLoaded', ()=> {
+// ----------------------------------------------------------------------------- MODAL
+const modal = document.querySelector(".modal");
+const overlay = document.querySelector(".overlay");
+const openModalBtn = document.querySelector(".btn-open");
+const closeModalBtn = document.querySelector(".btn-close");
 
-// ------- COOKIES
-     function createCookie(name,value,days) {
-          if (days) {
-          var date = new Date();
-          date.setTime(date.getTime() + (days * 24 * 60 * 60 *1000));
-          var expires = "; expires=" + date.toGMTString();
-          } else {
-          var expires = "";
-          }
-          document.cookie = name + "=" + value + expires + "; path=/";
-     }
+// close modal function
+const closeModal = function () {
+  modal.classList.add("hidden");
+};
 
-     function eraseCookie(name) {
-          createCookie(name,"",-1);
-     }
+// close the modal when the close button and overlay is clicked
+closeModalBtn.addEventListener("click", closeModal);
 
+// close modal when the Esc key is pressed
+document.addEventListener("keydown", function (e) {
+  if (e.key === "Escape" && !modal.classList.contains("hidden")) {
+    closeModal();
+  }
+});
 
-
-// ------- "MODAL"
-     function showModal(date){
-
-          var modalEl = document.getElementById("myDIV");
-          if (modalEl.style.display === "none") {
-               modalEl.style.display = "block";
-          } else {
-               modalEl.style.display = "none";
-          }
-     }
-
-// ------- CALENDAR
+function openModal(date) {
+     modal.classList.remove("hidden");
+};
 
 
-     const calendarEl = document.querySelector('#calendar')
 
-     const calendar = new FullCalendar.Calendar(calendarEl, {
-          initialView: 'multiMonthYear',
-          editable: true,
-       //   contentHeight: 600,
-          buttonText: {
-          today:false,
-          },
-          multiMonthMinWidth : 200,
-          weekText : "",
-          navLinks : false,
-        //  multiMonthMaxColumns: 3,
-          weekends : false,
-          dayHeaders : false ,
-          handleWindowResize: true,
-          eventBackgroundColor : '#378006',
-          eventDisplay : 'background',
-          events: 
-                {{ json|raw }},
+// ----------------------------------------------------------------------------- CALENDAR on page load
+document.addEventListener('DOMContentLoaded', ()=> {
+
+const calendarEl = document.querySelector('#calendar')
+
+const calendar = new FullCalendar.Calendar(calendarEl, {
+     initialView: 'multiMonthYear',
+     editable: true,
+     buttonText: {
+     today:false,
+     },
+     multiMonthMinWidth : 200,
+     weekText : "",
+     navLinks : false,
+       multiMonthMaxColumns: 4,
+     weekends : false,
+     dayHeaders : false ,
+     handleWindowResize: true,
+     eventBackgroundColor : '#378006',
+     eventDisplay : 'background',
+     events: {{ json|raw }},
+     eventClick: function(info) {
+          alert('Event: ' + info.event.date);
+     },
+
+     dateClick: function(date, jsEvent, view) {  
           
-          dateClick: function(date, jsEvent, view) {  
-               let selectedDate = date.dateStr; 
-               eraseCookie("date");
-               createCookie("date", selectedDate);  
-               location.reload(); // pb avec modal logiquement
-               showModal()
-          }
-     });
+          let selectedDate = date.dateStr; 
+        //  eraseCookie("date");
+       //   createCookie("date", selectedDate);  
 
-     calendar.render();
-    
+
+          
+          location.reload(); 
+          
+          openModal(date);
+
+     }
+});
+
+calendar.render();
 }); 
 
   
@@ -136,9 +167,8 @@
 
 {% endblock %}
 
-{% block javascripts %}
 
-<script src='fullcalendar/dist/index.global.js'></script>
+{% block javascripts %}
 {% endblock %}
 
-{# {% block importmap %}{{ importmap('app') }}{% endblock %} #}
+ {% block importmap %}{{ importmap('app') }}{% endblock %} 
