@@ -33,7 +33,7 @@ class ProjectManagerService
             $event = [
                 'id'=> $as->getId(),
                 'start'=> $as->getDate()->format('Y-m-d'),
-                'project'=> $as->getProject()->getName(),
+                'title'=> $as->getProject()->getName(),
             ];
             $data[]=$event;
         }

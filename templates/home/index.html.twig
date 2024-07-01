@@ -3,7 +3,7 @@
 {% block content_title %}Planning{% endblock %}
 
   {% block head_metas %}
-     <meta name="turbo-refresh-method" content="morph">
+     {# <meta name="turbo-refresh-method" content="morph"> #}
   {% endblock head_metas %}
   
 {# {% block page_actions %}
@@ -38,11 +38,16 @@
 
 </style>
 
- {# {{ dump(app.request.cookies) }}  #}
 
- <section class=" modal hidden" > {#   #}
-        <div class="flex" data-turbo-permanent>
-          <button class="btn-close"></button>
+  <div data-controller="calendar" 
+     data-calendar-json="{{ json }}"
+     data-calendar-target="calendar">
+</div>
+
+
+ <section class=" modal hidden " > {#   #}
+        <div class="flex" >
+          <button  class="btn-close"></button>
         </div>
         <div>
         
@@ -53,8 +58,7 @@
                     <span id="{{ project.id }}" class="text-secondary">{{ project.plannedHours }} </span> <!-- changement couleur -->
                     /{{ project.duration}} h</span>
 
-                    {# {% set date = app.request.cookies.get('date')  %} #}
-                    <a href=" {{ ea_url().setRoute('add_assignment', {id: project.id, date: date}) }} " class="btn btn-primary">assign</a>
+                    <a href=" {{ ea_url().setRoute('add_assignment', {id: project.id}) }} " class="btn btn-primary">assign</a> {# date : ? }
                     {# <ul> 
                               {% for person in project.peopleWorkingOnIt %}
                               <li>{{ person.name }}</li>
@@ -69,16 +73,14 @@
       </section>
       
 
-          <div class="d-flex">
-               {% for person in people %}
-                    <a href="{{ ea_url().setRoute('planning_person', {id:person.id})}}" class="btn">{{ person.name}} </a>
-               {% endfor %}
-                         <h1>{{app.request.cookies.get('date')}}</h1>
+     <div class="d-flex mt-5">
+          {% for person in people %}
+               <a href="{{ ea_url().setRoute('planning_person', {id:person.id})}}" class="btn">{{ person.name}} </a>
+          {% endfor %}
+     </div>
 
-          </div>
-
-
-     <div class="col-9">
+     
+     <div class="">
           <div id='calendar'></div>
      </div >
 
@@ -111,58 +113,14 @@ document.addEventListener("keydown", function (e) {
   }
 });
 
-function openModal(date) {
+function openModal() {
      modal.classList.remove("hidden");
 };
 
 
-
 // ----------------------------------------------------------------------------- CALENDAR on page load
-document.addEventListener('DOMContentLoaded', ()=> {
-
-const calendarEl = document.querySelector('#calendar')
-
-const calendar = new FullCalendar.Calendar(calendarEl, {
-     initialView: 'multiMonthYear',
-     editable: true,
-     buttonText: {
-     today:false,
-     },
-     multiMonthMinWidth : 200,
-     weekText : "",
-     navLinks : false,
-       multiMonthMaxColumns: 4,
-     weekends : false,
-     dayHeaders : false ,
-     handleWindowResize: true,
-     eventBackgroundColor : '#378006',
-     eventDisplay : 'background',
-     events: {{ json|raw }},
-     eventClick: function(info) {
-          alert('Event: ' + info.event.date);
-     },
-
-     dateClick: function(date, jsEvent, view) {  
-          
-          let selectedDate = date.dateStr; 
-        //  eraseCookie("date");
-       //   createCookie("date", selectedDate);  
-
-
-          
-          location.reload(); 
-          
-          openModal(date);
-
-     }
-});
-
-calendar.render();
-}); 
 
   
-
-
 </script>
 
 {% endblock %}

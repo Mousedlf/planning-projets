@@ -53,7 +53,7 @@ class PlanningController extends AbstractController
         return $this->render('home/index.html.twig', [
             'json'=> $json,
             'projects' => $projects,
-            'people'=> $people,
+            'people'=> $people
         ] );
    
 
@@ -71,7 +71,7 @@ class PlanningController extends AbstractController
 
 
         $allotedTime = 8 ; // a recup d'un formulaire, max 8 càd 1 jour ?
-        $d = new DateTime($date);
+        $d = new DateTime($date); 
 
 
         $projectManagerService->assign($project, $d, $person[0], $allotedTime);
